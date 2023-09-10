@@ -4,7 +4,7 @@
 #include <RTClib.h>
 #include <ssd1306.h>
 #include <nano_engine.h>
-//#include "sova.h"
+#include "pint.h"
 
 #include "settings.h" // config
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
@@ -12,11 +12,33 @@ char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursd
 NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // Setup sensor
 RTC_DS3231 rtc; // Setup clock
 
-bool textDemo(int dist) {
-    ssd1306_setFixedFont(ssd1306xled_font6x8);
-    ssd1306_clearScreen8();
-    ssd1306_setColor(RGB_COLOR8(255,255,0));
-    ssd1306_printFixed8(8,  16, "put dist in here", STYLE_NORMAL);
+NanoEngine8 engine;
+NanoSprite<NanoEngine8, engine> sprite( {120, 2}, {7, 7}, heartBMP );
+NanoSprite<NanoEngine8, engine> sprite2( {8, 12}, {59, 96}, pintGlassBMP ); // x: 34 = center
+
+bool drawAll() {
+    engine.canvas.clear();
+    engine.canvas.setMode(0);  // We want to draw non-transparent bitmap
+    engine.canvas.setColor(RGB_COLOR8(255,0,0));  // draw with red color
+    sprite.draw();
+    engine.canvas.setColor(RGB_COLOR8(255,255,255));  // draw with white color
+    engine.canvas.printFixed(58,  2, "@sudosammy", STYLE_NORMAL);
+
+    engine.canvas.setColor(RGB_COLOR8(255,255,255));  // draw with white color
+    sprite2.draw();
+
+    engine.canvas.setColor(RGB_COLOR8(255,255,0));  // draw with yellow color
+    engine.canvas.printFixed(76,  24, "THIS WK", STYLE_NORMAL);
+    engine.canvas.printFixed(76,  34, "1 hour", STYLE_NORMAL);
+
+    engine.canvas.printFixed(76,  52, "MAX", STYLE_NORMAL);
+    engine.canvas.printFixed(76,  62, "25 hours", STYLE_NORMAL);
+
+    engine.canvas.printFixed(76,  80, "AVG", STYLE_NORMAL);
+    engine.canvas.printFixed(76,  90, "6 hours", STYLE_NORMAL);
+
+    engine.canvas.printFixed(4,  119, "TUE 17:05", STYLE_NORMAL);
+    engine.canvas.printFixed(74,  119, "Pints: 3", STYLE_NORMAL);
 
     return true;
 }
@@ -39,11 +61,16 @@ void setup() {
     }
   }
 
+  // Setup screen
   ssd1306_setFixedFont(ssd1306xled_font6x8);
   il9163_setOffset(2, 1);
   il9163_128x128_spi_init(TFT_RST, TFT_CS, TFT_DC);
-  ssd1306_setMode(LCD_MODE_NORMAL);
-  ssd1306_clearScreen8();
+
+  // Setup nanoengine
+  engine.begin();
+  engine.setFrameRate(45);
+  engine.drawCallback( drawAll );  // Set callback to draw parts, when NanoEngine8 asks
+  engine.refresh();                // Makes engine to refresh whole display content at start-up
 }
 
 void loop() {
@@ -56,7 +83,11 @@ void loop() {
   Serial.println("cm");
 
   //il9163_setRotation(0); // this seems to shift the offset -1px on the x-axis. wtf?
-  textDemo(distance);
+
+  if (!engine.nextFrame()) return;
+  // You will see horizontal flying heart
+  //sprite.moveBy( { 1, 0 } );
+  engine.display();                // refresh display content
 
   if (CLOCK_CONNECTED) {
     DateTime now = rtc.now();
