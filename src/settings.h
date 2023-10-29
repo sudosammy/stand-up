@@ -4,7 +4,7 @@
 #define MAX_DISTANCE    300 // Maximum distance we want to measure (in centimeters).
 
 // Clock pins
-#define CLOCK_CONNECTED false // set false if no clock
+#define CLOCK_CONNECTED true // set false if no clock
 
 // TFT details
 // LED = 5v (contains 100 ohm resistor)

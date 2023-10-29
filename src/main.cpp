@@ -16,18 +16,20 @@ NanoEngine8 engine;
 NanoSprite<NanoEngine8, engine> sprite( {120, 2}, {7, 7}, heartBMP );
 NanoSprite<NanoEngine8, engine> sprite2( {8, 12}, {59, 96}, pintGlassBMP ); // x: 34 = center
 
+int beerPerc = 0;
+
 bool drawAll() {
     engine.canvas.clear();
-    engine.canvas.setMode(0);  // We want to draw non-transparent bitmap
-    engine.canvas.setColor(RGB_COLOR8(255,0,0));  // draw with red color
-    sprite.draw();
-    engine.canvas.setColor(RGB_COLOR8(255,255,255));  // draw with white color
-    engine.canvas.printFixed(58,  2, "@sudosammy", STYLE_NORMAL);
+    engine.canvas.setMode(CANVAS_MODE_TRANSPARENT);  // We want to draw non-transparent bitmap
+    // engine.canvas.setColor(RGB_COLOR8(255,0,0));  // draw with red color
+    // sprite.draw();
+    // engine.canvas.setColor(RGB_COLOR8(255,255,255));  // draw with white color
+    // engine.canvas.printFixed(58,  2, "@sudosammy", STYLE_NORMAL);
 
     engine.canvas.setColor(RGB_COLOR8(255,255,255));  // draw with white color
     sprite2.draw();
 
-    engine.canvas.setColor(RGB_COLOR8(255,255,0));  // draw with yellow color
+    engine.canvas.setColor(RGB_COLOR8(255,255,255));  // draw with yellow color
     engine.canvas.printFixed(76,  24, "THIS WK", STYLE_NORMAL);
     engine.canvas.printFixed(76,  34, "1 hour", STYLE_NORMAL);
 
@@ -37,17 +39,39 @@ bool drawAll() {
     engine.canvas.printFixed(76,  80, "AVG", STYLE_NORMAL);
     engine.canvas.printFixed(76,  90, "6 hours", STYLE_NORMAL);
 
-    engine.canvas.printFixed(4,  119, "TUE 17:05", STYLE_NORMAL);
+    engine.canvas.printFixed(4,  119, "Tue 17:05", STYLE_NORMAL);
     engine.canvas.printFixed(74,  119, "Pints: 3", STYLE_NORMAL);
+
+    // engine.canvas.setColor(RGB_COLOR8(255,0,0));
+    // engine.canvas.drawLine(25, 50, 120, 91);
 
     return true;
 }
+
+bool addBeer() {
+  engine.refresh(25, 50, 120, 91);
+  engine.canvas.setColor(RGB_COLOR8(255,0,0));
+  engine.canvas.drawLine(25, 50, 120, 91);
+  engine.display();
+  return true;
+}
+
+bool remBeer() {
+
+  return true;
+}
+
+bool clearBeer() {
+
+  return true;
+}
+
 
 void setup() {
   Serial.begin(9600);
 
   if (CLOCK_CONNECTED) {
-    if (! rtc.begin()) {
+    if (!rtc.begin()) {
       Serial.println("Couldn't find RTC");
       Serial.flush();
       while (1) delay(10);
@@ -69,7 +93,7 @@ void setup() {
   // Setup nanoengine
   engine.begin();
   engine.setFrameRate(45);
-  engine.drawCallback( drawAll );  // Set callback to draw parts, when NanoEngine8 asks
+  engine.drawCallback(drawAll);  // Set callback to draw parts, when NanoEngine8 asks
   engine.refresh();                // Makes engine to refresh whole display content at start-up
 }
 
@@ -84,10 +108,7 @@ void loop() {
 
   //il9163_setRotation(0); // this seems to shift the offset -1px on the x-axis. wtf?
 
-  if (!engine.nextFrame()) return;
-  // You will see horizontal flying heart
-  //sprite.moveBy( { 1, 0 } );
-  engine.display();                // refresh display content
+  addBeer();
 
   if (CLOCK_CONNECTED) {
     DateTime now = rtc.now();
@@ -107,5 +128,8 @@ void loop() {
     Serial.print(now.second(), DEC);
     Serial.println();
   }
+
+  // if (!engine.nextFrame()) return;
+  // engine.display();
   
 }
