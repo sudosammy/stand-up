@@ -123,14 +123,102 @@ void beerLevel(int perc) {
   engine.canvas.drawLine(18, 86, 56, 86);
 
   engine.canvas.drawLine(18, 85, 57, 85);
+  engine.canvas.drawLine(18, 84, 57, 84);
+  engine.canvas.drawLine(18, 83, 57, 83);
+  engine.canvas.drawLine(18, 82, 57, 82);
+  engine.canvas.drawLine(18, 81, 57, 81);
+  engine.canvas.drawLine(18, 80, 57, 80);
   
+  engine.canvas.drawLine(17, 79, 57, 79);
+  engine.canvas.drawLine(17, 78, 57, 78);
+  engine.canvas.drawLine(17, 77, 57, 77);
+  engine.canvas.drawLine(17, 76, 57, 76);
 
-  // add random splashes
-  for (int i = 0; i < 100; i++) {
+  engine.canvas.drawLine(17, 75, 58, 75);
+  engine.canvas.drawLine(17, 74, 58, 74);
+  engine.canvas.drawLine(17, 73, 58, 73);
+  engine.canvas.drawLine(17, 72, 58, 72);
+  engine.canvas.drawLine(17, 71, 58, 71);
+  engine.canvas.drawLine(17, 70, 58, 70);
+
+  engine.canvas.drawLine(16, 69, 58, 69);
+  engine.canvas.drawLine(16, 68, 58, 68);
+  engine.canvas.drawLine(16, 67, 58, 67);
+  engine.canvas.drawLine(16, 66, 58, 66);
+  engine.canvas.drawLine(16, 65, 58, 65);
+
+  engine.canvas.drawLine(16, 64, 59, 64);
+  engine.canvas.drawLine(16, 63, 59, 63);
+  engine.canvas.drawLine(16, 62, 59, 62);
+  engine.canvas.drawLine(16, 61, 59, 61);
+  engine.canvas.drawLine(16, 60, 59, 60);
+
+  engine.canvas.drawLine(15, 59, 59, 59);
+  engine.canvas.drawLine(15, 58, 59, 58);
+  engine.canvas.drawLine(15, 57, 59, 57);
+  engine.canvas.drawLine(15, 56, 59, 56);
+  engine.canvas.drawLine(15, 55, 59, 55);
+
+  engine.canvas.drawLine(15, 54, 60, 54);
+  engine.canvas.drawLine(15, 53, 60, 53);
+
+  engine.canvas.drawLine(14, 52, 60, 52);
+  engine.canvas.drawLine(14, 51, 61, 51);
+  engine.canvas.drawLine(13, 50, 61, 50);
+  engine.canvas.drawLine(13, 49, 62, 49);
+
+  engine.canvas.drawLine(12, 48, 62, 48);
+  engine.canvas.drawLine(12, 47, 63, 47);
+  engine.canvas.drawLine(11, 46, 63, 46);
+  engine.canvas.drawLine(11, 45, 63, 45);
+  
+  engine.canvas.drawLine(11, 44, 64, 44);
+  engine.canvas.drawLine(11, 43, 64, 43);
+  engine.canvas.drawLine(11, 42, 64, 42);
+  engine.canvas.drawLine(11, 41, 64, 41);
+  engine.canvas.drawLine(11, 40, 64, 40);
+  engine.canvas.drawLine(11, 39, 64, 39);
+  engine.canvas.drawLine(11, 38, 64, 38);
+  engine.canvas.drawLine(11, 37, 64, 37);
+  engine.canvas.drawLine(11, 36, 64, 36);
+  engine.canvas.drawLine(11, 35, 63, 35);
+
+  engine.canvas.drawLine(12, 34, 63, 34);
+  engine.canvas.drawLine(12, 33, 63, 33);
+
+  engine.canvas.drawLine(12, 32, 62, 32);
+  engine.canvas.drawLine(12, 31, 62, 31);
+  engine.canvas.drawLine(13, 30, 62, 30);
+
+  engine.canvas.setColor(RGB_COLOR8(255,255,189));
+  engine.canvas.drawLine(13, 29, 62, 29);
+  engine.canvas.drawLine(13, 28, 62, 28);
+  engine.canvas.drawLine(12, 27, 62, 27);
+  engine.canvas.drawLine(12, 26, 62, 26);
+  engine.canvas.drawLine(12, 25, 62, 25);
+  engine.canvas.drawLine(12, 24, 62, 24);
+  engine.canvas.drawLine(12, 23, 62, 23);
+  engine.canvas.drawLine(12, 22, 63, 22);
+  engine.canvas.drawLine(12, 21, 63, 21);
+  engine.canvas.drawLine(12, 20, 63, 20);
+  engine.canvas.drawLine(12, 19, 63, 19);
+  engine.canvas.drawLine(12, 18, 63, 18);
+
+  engine.canvas.drawLine(11, 17, 19, 17);
+  engine.canvas.drawLine(56, 17, 63, 17);
+  engine.canvas.drawLine(24, 16, 51, 16);
+  engine.canvas.drawLine(15, 15, 59, 15);
+
+  // add bubbles
+  for (int i = 0; i < 50; i++) {
     int x = random(20, 55);
-    int y = random(30, 98);
+    int y = random(32, 96);
     engine.canvas.setColor(RGB_COLOR8(239,239,21));
     engine.canvas.drawLine(x, y, x, y);
+    // engine.canvas.drawLine(x, y-1, x, y-1); //above
+    // engine.canvas.drawLine(x, y+1, x, y+1); //below
+    // engine.canvas.drawLine(x+1, y, x+1, y); //right
+    // engine.canvas.drawLine(x-1, y, x-1, y); //left
   }
 
   engine.refresh(10, 98, 60, 30);
@@ -206,7 +294,7 @@ void setup() {
 
   // Setup nanoengine
   engine.begin();
-  engine.setFrameRate(10);
+  engine.setFrameRate(30);
   engine.drawCallback(drawAll);  // Set callback to draw parts, when NanoEngine8 asks
   engine.refresh();                // Makes engine to refresh whole display content at start-up
 }
