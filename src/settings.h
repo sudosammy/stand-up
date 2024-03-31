@@ -1,10 +1,18 @@
+// Debug options
+#define DEBUG           true    // Set true to make 1 minute = 1 sec
+// DEBUG must be true for the following to work
+#define ANYTIME         true    // Set true to ignore work days/times
+#define TEST_NEW_WEEK   false   // Set true to set today as the data save day
+#define RESET           false   // Set true to reset EEPROM on boot
+
+// Workday
+#define WORK_START      8       // Start time in 24h format
+#define WORK_END        18      // End time in 24h format
+
 // Senor pins
 #define TRIGGER_PIN     6
 #define ECHO_PIN        5
-#define MAX_DISTANCE    300 // Maximum distance we want to measure (in centimeters).
-
-// Clock pins
-#define CLOCK_CONNECTED true // set false if no clock
+#define MAX_DISTANCE    300     // Maximum distance we want to measure (in centimeters)
 
 // TFT details
 // LED = 5v (contains 100 ohm resistor)
