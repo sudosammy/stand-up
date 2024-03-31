@@ -12,8 +12,7 @@ NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // Setup sensor
 RTC_DS3231 rtc; // Setup clock
 
 NanoEngine8 engine;
-NanoSprite<NanoEngine8, engine> sprite( {120, 2}, {7, 7}, heartBMP );
-NanoSprite<NanoEngine8, engine> sprite2( {8, 12}, {59, 96}, pintGlassBMP ); // x: 34 = center
+NanoSprite<NanoEngine8, engine> pintglass({8, 12}, {59, 96}, pintGlassBMP); // x: 34 = center
 
 // EEPROM layout
 // 0 = maximum hours
@@ -267,7 +266,7 @@ bool drawAll() {
     engine.canvas.clear(); // Clear canvas
     engine.canvas.setMode(CANVAS_MODE_TRANSPARENT);  // We want to draw non-transparent bitmap
     engine.canvas.setColor(RGB_COLOR8(255,255,255));  // draw with white color
-    sprite2.draw(); // Draw pint glass
+    pintglass.draw();
 
     engine.canvas.printFixed(76,  24, "THIS WK", STYLE_NORMAL);
     printWeekHours();
@@ -282,7 +281,6 @@ bool drawAll() {
     printPints();
 
     beerLevel();
-    //bubbleFill();
 
     return true;
 }
