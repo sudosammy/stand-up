@@ -24,16 +24,18 @@ NanoSprite<NanoEngine8, engine> heart({118, 5}, {7, 7}, heartBMP);
 // 5 = current week hours
 
 // TODO create setters/getters for these
-int weeklyPints = 0; // 1 pint = 5 hours / 300 minutes
-int lastPintAt = 0;
-int weekHours = 0;
-int maxHours = 0;
-int avgHours = 0;
-int resetDay = 0; // 0 = Sunday
-float beerPerc = 0;
-int currentSession = 0;
-bool showSprite = false;
-unsigned long timeRun = 0L;
+int weeklyPints = 0;              // 1 pint = 5 hours / 300 minutes
+int lastPintAt = 0;               // Number of hours when last pint was added
+int weekHours = 0;                // Number of hours standing this week
+int maxHours = 0;                 // Maximum number of hours standing in a week
+int avgHours = 0;                 // Average number of hours standing in a week (last 4 weeks)
+int resetDay = 0;                 // 0 = Sunday
+float beerPerc = 0;               // Percentage of beer to fill pint glass
+int currentSession = 0;           // Number of minutes standing in current session
+bool showSprite = false;          // Show heart sprite when standing
+int lastSensorReading = 0;        // Last distance sensor reading
+unsigned long sensorReadTime = 0; // For counting seconds (lastSensorReading)
+unsigned long timeRun = 0L;       // For counting minutes (currentSession)
 #if !DEBUG
 unsigned long minuteCounter = (60*1000L);
 #else
@@ -161,9 +163,9 @@ void beerLevel() {
     }
 
     // bubbles?
-    if (i < 70) {
+    if (i > 1 && i < 70) {
       int bubbleX = random(22, 50);
-      int bubbleY = random(constrain(pgm_read_word(&pintArray[level][1])+2, 28, 97), 97);
+      int bubbleY = random(constrain(pgm_read_word(&pintArray[level][1])+2, 28, 98), 98);
       engine.canvas.setColor(RGB_COLOR8(239,239,21));
       engine.canvas.drawLine(bubbleX, bubbleY, bubbleX, bubbleY);
     }
@@ -172,18 +174,17 @@ void beerLevel() {
 }
 
 bool isStanding() {
-  // Read distance from if 1 second has passed
-  unsigned long currentMillis = millis();
-  static unsigned long lastMillis = 0;
-  if (currentMillis - lastMillis < 1000) {
-    return false;
+  int distance = lastSensorReading;
+  // Read updated distance every second
+  if (lastSensorReading == 0 || (millis() - sensorReadTime > 1000)) {
+    distance = sonar.ping_cm();
+    if (DEBUG) {
+      Serial.print("Distance: "); Serial.print(distance); Serial.println("cm");
+    }
+    lastSensorReading = distance;
+    sensorReadTime = millis();
   }
-  lastMillis = currentMillis;
 
-  int distance = sonar.ping_cm();
-  if (DEBUG) {
-    Serial.print("Distance: "); Serial.print(distance); Serial.println("cm");
-  }
   if (distance <= 125) { // distance to roof when sitting: ~150cm
     return true;
   }
@@ -212,8 +213,9 @@ void trackTime()  {
     if (millis() - timeRun >= minuteCounter) {
       timeRun = millis();
       currentSession++; // increment currentSession by 1 minute
-      Serial.print("Standing, current session: ");
-      Serial.println(currentSession);
+      if (DEBUG) {
+        Serial.print("Standing, current session: "); Serial.println(currentSession);
+      }
     }
 
     // update pint glass
@@ -385,8 +387,5 @@ void loop() {
   if (!engine.nextFrame()) return;
   engine.display();
   //clockDebug();
-
   trackTime();
-
-  delay(1000);
 }
