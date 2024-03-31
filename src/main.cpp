@@ -13,6 +13,7 @@ RTC_DS3231 rtc; // Setup clock
 
 NanoEngine8 engine;
 NanoSprite<NanoEngine8, engine> pintglass({8, 12}, {59, 96}, pintGlassBMP); // x: 34 = center
+NanoSprite<NanoEngine8, engine> heart({118, 5}, {7, 7}, heartBMP);
 
 // EEPROM layout
 // 0 = maximum hours
@@ -31,6 +32,7 @@ int avgHours = 0;
 int resetDay = 0; // 0 = Sunday
 float beerPerc = 0;
 int currentSession = 0;
+bool showSprite = false;
 unsigned long timeRun = 0L;
 #if !DEBUG
 unsigned long minuteCounter = (60*1000L);
@@ -91,7 +93,7 @@ void resetWeek() {
 }
 
 void printWeekHours() {
-  engine.refresh(76, 34, 128, 128);
+  engine.refresh(76, 34, 128, 44);
   char buffer[10];
   if (weekHours == 1) {
     sprintf(buffer, "1 hour");
@@ -99,23 +101,23 @@ void printWeekHours() {
     sprintf(buffer, "%d hours", weekHours);
   }
   engine.canvas.printFixed(76, 34, buffer, STYLE_NORMAL);
-  engine.refresh(76, 34, 128, 128);
+  engine.refresh(76, 34, 128, 44);
 }
 
 void printMax() {
-  engine.refresh(76, 62, 128, 128);
+  engine.refresh(76, 62, 128, 72);
   char buffer[10];
   sprintf(buffer, "%d hours", maxHours);
   engine.canvas.printFixed(76, 62, buffer, STYLE_NORMAL);
-  engine.refresh(76, 62, 128, 128);
+  engine.refresh(76, 62, 128, 72);
 }
 
 void printAvg() {
-  engine.refresh(76, 90, 128, 128);
+  engine.refresh(76, 90, 128, 100);
   char buffer[10];
   sprintf(buffer, "%d hours", avgHours);
   engine.canvas.printFixed(76, 90, buffer, STYLE_NORMAL);
-  engine.refresh(76, 90, 128, 128);
+  engine.refresh(76, 90, 128, 100);
 }
 
 void printTime() {
@@ -123,9 +125,9 @@ void printTime() {
 
   char buffer[10];
   sprintf(buffer, "%s %02d:%02d", daysOfTheWeek[now.dayOfTheWeek()], now.hour(), now.minute());
-  engine.refresh(4, 119, 128, 128);
+  engine.refresh(4, 119, 74, 128);
   engine.canvas.printFixed(4, 119, buffer, STYLE_NORMAL);
-  engine.refresh(4, 119, 128, 128); 
+  engine.refresh(4, 119, 74, 128); 
 }
 
 void printPints() {
@@ -170,6 +172,14 @@ void beerLevel() {
 }
 
 bool isStanding() {
+  // Read distance from if 1 second has passed
+  unsigned long currentMillis = millis();
+  static unsigned long lastMillis = 0;
+  if (currentMillis - lastMillis < 1000) {
+    return false;
+  }
+  lastMillis = currentMillis;
+
   int distance = sonar.ping_cm();
   if (DEBUG) {
     Serial.print("Distance: "); Serial.print(distance); Serial.println("cm");
@@ -198,6 +208,7 @@ bool isWorking() {
 
 void trackTime()  {
   if (isWorking() && isStanding()) {
+    showSprite = true;
     if (millis() - timeRun >= minuteCounter) {
       timeRun = millis();
       currentSession++; // increment currentSession by 1 minute
@@ -222,6 +233,8 @@ void trackTime()  {
       }
       currentSession = 0; // one hour has passed, reset timer
     }
+  } else {
+    showSprite = false;
   }
 
   // if 5 hours have passed, add a pint
@@ -281,6 +294,20 @@ bool drawAll() {
     printPints();
 
     beerLevel();
+    
+    if (showSprite) {
+      // add heart sprite
+      engine.refresh(118, 5, 128, 12);
+      engine.canvas.setColor(RGB_COLOR8(255,255,255));
+      heart.draw();
+      engine.refresh(118, 5, 128, 12);
+    } else {
+      // remove heart sprite
+      engine.refresh(118, 5, 128, 12);
+      engine.canvas.setColor(RGB_COLOR8(0,0,0));
+      heart.draw();
+      engine.refresh(118, 5, 128, 12);
+    }
 
     return true;
 }
@@ -349,7 +376,7 @@ void setup() {
 
   // Setup nanoengine
   engine.begin();
-  engine.setFrameRate(30);
+  engine.setFrameRate(1);
   engine.drawCallback(drawAll);  // Set callback to draw parts, when NanoEngine8 asks
   engine.refresh();              // Makes engine to refresh whole display content at start-up
 }
