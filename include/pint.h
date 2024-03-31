@@ -2,4 +2,5 @@
 #include <stdint.h>
 
 extern const uint8_t pintGlassBMP [] PROGMEM;
+extern const int pintArray[84][4] PROGMEM;
 extern const uint8_t heartBMP [] PROGMEM;

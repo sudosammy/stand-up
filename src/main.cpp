@@ -23,19 +23,20 @@ NanoSprite<NanoEngine8, engine> sprite2( {8, 12}, {59, 96}, pintGlassBMP ); // x
 // 4 = last weeks hours
 // 5 = current week hours
 
-int beerPerc = 0;
-int weeklyPints = 0;
+// TODO create setters/getters for these
+int weeklyPints = 0; // 1 pint = 5 hours / 300 minutes
 int lastPintAt = 0;
 int weekHours = 0;
 int maxHours = 0;
 int avgHours = 0;
 int resetDay = 0; // 0 = Sunday
+float beerPerc = 0;
 int currentSession = 0;
 unsigned long timeRun = 0L;
 #if !DEBUG
 unsigned long minuteCounter = (60*1000L);
 #else
-unsigned long minuteCounter = (10*1000L); // Make time speedy
+unsigned long minuteCounter = (1*1000L); // Make time speedy
 #endif
 char daysOfTheWeek[7][4] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
@@ -136,125 +137,37 @@ void printPints() {
   engine.refresh(74, 119, 128, 128);
 }
 
-void beerLevel(int perc) {
-  //engine.refresh(10, 98, 60, 30);
-  engine.canvas.setColor(RGB_COLOR8(255,179,0));
-  engine.canvas.drawLine(24, 98, 51, 98);
-  engine.canvas.drawLine(20, 97, 55, 97);
-  engine.canvas.drawLine(19, 96, 55, 96);
-  engine.canvas.drawLine(19, 95, 55, 95);
-  engine.canvas.drawLine(19, 94, 56, 94);
+void beerLevel() {
+  int level = map(beerPerc, 0, 100, 0, 84);
 
-  engine.canvas.drawLine(19, 93, 56, 93);
-  engine.canvas.drawLine(19, 92, 56, 92);
-  engine.canvas.drawLine(19, 91, 56, 91);
-  engine.canvas.drawLine(19, 90, 56, 90);
+  // fill the pint glass
+  engine.refresh(10, 15, 64, 98); // refresh whole pint glass
+  for (int i = 0; i < level; i++) {
+    if (i >= 70) {
+      engine.canvas.setColor(RGB_COLOR8(255,255,189)); // head
+    } else {
+      engine.canvas.setColor(RGB_COLOR8(255,179,0)); // beer
+    }
 
-  engine.canvas.drawLine(18, 89, 56, 89);
-  engine.canvas.drawLine(18, 88, 56, 88);
-  engine.canvas.drawLine(18, 87, 56, 87);
-  engine.canvas.drawLine(18, 86, 56, 86);
+    int x1 = pgm_read_word(&pintArray[i][0]);
+    int y1 = pgm_read_word(&pintArray[i][1]);
+    int x2 = pgm_read_word(&pintArray[i][2]);
+    int y2 = pgm_read_word(&pintArray[i][3]);
+    engine.canvas.drawLine(x1, y1, x2, y2);
 
-  engine.canvas.drawLine(18, 85, 57, 85);
-  engine.canvas.drawLine(18, 84, 57, 84);
-  engine.canvas.drawLine(18, 83, 57, 83);
-  engine.canvas.drawLine(18, 82, 57, 82);
-  engine.canvas.drawLine(18, 81, 57, 81);
-  engine.canvas.drawLine(18, 80, 57, 80);
-  
-  engine.canvas.drawLine(17, 79, 57, 79);
-  engine.canvas.drawLine(17, 78, 57, 78);
-  engine.canvas.drawLine(17, 77, 57, 77);
-  engine.canvas.drawLine(17, 76, 57, 76);
+    if (i == 81) { // special case for 81 where we need to draw two lines
+      engine.canvas.drawLine(56, 17, 63, 17);
+    }
 
-  engine.canvas.drawLine(17, 75, 58, 75);
-  engine.canvas.drawLine(17, 74, 58, 74);
-  engine.canvas.drawLine(17, 73, 58, 73);
-  engine.canvas.drawLine(17, 72, 58, 72);
-  engine.canvas.drawLine(17, 71, 58, 71);
-  engine.canvas.drawLine(17, 70, 58, 70);
-
-  engine.canvas.drawLine(16, 69, 58, 69);
-  engine.canvas.drawLine(16, 68, 58, 68);
-  engine.canvas.drawLine(16, 67, 58, 67);
-  engine.canvas.drawLine(16, 66, 58, 66);
-  engine.canvas.drawLine(16, 65, 58, 65);
-
-  engine.canvas.drawLine(16, 64, 59, 64);
-  engine.canvas.drawLine(16, 63, 59, 63);
-  engine.canvas.drawLine(16, 62, 59, 62);
-  engine.canvas.drawLine(16, 61, 59, 61);
-  engine.canvas.drawLine(16, 60, 59, 60);
-
-  engine.canvas.drawLine(15, 59, 59, 59);
-  engine.canvas.drawLine(15, 58, 59, 58);
-  engine.canvas.drawLine(15, 57, 59, 57);
-  engine.canvas.drawLine(15, 56, 59, 56);
-  engine.canvas.drawLine(15, 55, 59, 55);
-
-  engine.canvas.drawLine(15, 54, 60, 54);
-  engine.canvas.drawLine(15, 53, 60, 53);
-
-  engine.canvas.drawLine(14, 52, 60, 52);
-  engine.canvas.drawLine(14, 51, 61, 51);
-  engine.canvas.drawLine(13, 50, 61, 50);
-  engine.canvas.drawLine(13, 49, 62, 49);
-
-  engine.canvas.drawLine(12, 48, 62, 48);
-  engine.canvas.drawLine(12, 47, 63, 47);
-  engine.canvas.drawLine(11, 46, 63, 46);
-  engine.canvas.drawLine(11, 45, 63, 45);
-  
-  engine.canvas.drawLine(11, 44, 64, 44);
-  engine.canvas.drawLine(11, 43, 64, 43);
-  engine.canvas.drawLine(11, 42, 64, 42);
-  engine.canvas.drawLine(11, 41, 64, 41);
-  engine.canvas.drawLine(11, 40, 64, 40);
-  engine.canvas.drawLine(11, 39, 64, 39);
-  engine.canvas.drawLine(11, 38, 64, 38);
-  engine.canvas.drawLine(11, 37, 64, 37);
-  engine.canvas.drawLine(11, 36, 64, 36);
-  engine.canvas.drawLine(11, 35, 63, 35);
-
-  engine.canvas.drawLine(12, 34, 63, 34);
-  engine.canvas.drawLine(12, 33, 63, 33);
-
-  engine.canvas.drawLine(12, 32, 62, 32);
-  engine.canvas.drawLine(12, 31, 62, 31);
-
-  engine.canvas.setColor(RGB_COLOR8(255,255,189));
-  engine.canvas.drawLine(13, 30, 62, 30);
-  engine.canvas.drawLine(13, 29, 62, 29);
-  engine.canvas.drawLine(13, 28, 62, 28);
-  engine.canvas.drawLine(12, 27, 62, 27);
-  engine.canvas.drawLine(12, 26, 62, 26);
-  engine.canvas.drawLine(12, 25, 62, 25);
-  engine.canvas.drawLine(12, 24, 62, 24);
-  engine.canvas.drawLine(12, 23, 62, 23);
-  engine.canvas.drawLine(12, 22, 63, 22);
-  engine.canvas.drawLine(12, 21, 63, 21);
-  engine.canvas.drawLine(12, 20, 63, 20);
-  engine.canvas.drawLine(12, 19, 63, 19);
-  engine.canvas.drawLine(12, 18, 63, 18);
-
-  engine.canvas.drawLine(11, 17, 19, 17);
-  engine.canvas.drawLine(56, 17, 63, 17);
-  engine.canvas.drawLine(24, 16, 51, 16);
-  engine.canvas.drawLine(15, 15, 59, 15);
-
-  // add bubbles
-  for (int i = 0; i < 50; i++) {
-    int x = random(25, 50);
-    int y = random(32, 96);
-    engine.canvas.setColor(RGB_COLOR8(239,239,21));
-    engine.canvas.drawLine(x, y, x, y);
-    // engine.canvas.drawLine(x, y-1, x, y-1); //above
-    // engine.canvas.drawLine(x, y+1, x, y+1); //below
-    // engine.canvas.drawLine(x+1, y, x+1, y); //right
-    // engine.canvas.drawLine(x-1, y, x-1, y); //left
+    // bubbles?
+    if (i < 70) {
+      int bubbleX = random(22, 50);
+      int bubbleY = random(constrain(pgm_read_word(&pintArray[level][1])+2, 28, 97), 97);
+      engine.canvas.setColor(RGB_COLOR8(239,239,21));
+      engine.canvas.drawLine(bubbleX, bubbleY, bubbleX, bubbleY);
+    }
   }
-
-  //engine.refresh(10, 98, 60, 30);
+  engine.refresh(10, 15, 64, 98);
 }
 
 bool isStanding() {
@@ -286,12 +199,17 @@ bool isWorking() {
 
 void trackTime()  {
   if (isWorking() && isStanding()) {
-    unsigned long currentMillis = millis(); // TODO FIX ONLY WORKING FOR 1 MINUTE
-    if (currentMillis - timeRun >= minuteCounter) {
-      timeRun = minuteCounter;
+    if (millis() - timeRun >= minuteCounter) {
+      timeRun = millis();
       currentSession++; // increment currentSession by 1 minute
       Serial.print("Standing, current session: ");
       Serial.println(currentSession);
+    }
+
+    // update pint glass
+    beerPerc = ((float)(((weekHours - weeklyPints * 5) * 60) + currentSession) / 300) * 100;
+    if (DEBUG) {
+      Serial.print("Beer percentage: "); Serial.println(beerPerc);
     }
 
     if (currentSession >= 60) {
@@ -363,8 +281,8 @@ bool drawAll() {
     printTime();
     printPints();
 
-    beerPerc = 10;
-    beerLevel(beerPerc);
+    beerLevel();
+    //bubbleFill();
 
     return true;
 }
@@ -423,6 +341,9 @@ void setup() {
   weeklyPints = weekHours / 5;
   lastPintAt = weekHours;
 
+  // Set beer percentage
+  beerPerc = ((float)(((weekHours - weeklyPints * 5) * 60) + currentSession) / 300) * 100;
+
   // Setup screen
   ssd1306_setFixedFont(ssd1306xled_font6x8);
   il9163_setOffset(2, 1);
@@ -430,14 +351,14 @@ void setup() {
 
   // Setup nanoengine
   engine.begin();
-  engine.setFrameRate(1);
+  engine.setFrameRate(30);
   engine.drawCallback(drawAll);  // Set callback to draw parts, when NanoEngine8 asks
-  engine.refresh();                // Makes engine to refresh whole display content at start-up
+  engine.refresh();              // Makes engine to refresh whole display content at start-up
 }
 
 void loop() {
   if (!engine.nextFrame()) return;
-  engine.display();  
+  engine.display();
   //clockDebug();
 
   trackTime();
