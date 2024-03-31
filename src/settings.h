@@ -1,9 +1,9 @@
 // Debug options
-#define DEBUG           true    // Set true to make 1 minute = 1 sec
+#define DEBUG           false       // Set true to make 1 minute = 1 sec
+#define RESET_ALL       false        // Set true to reset EEPROM on boot
 // DEBUG must be true for the following to work
-#define ANYTIME         true    // Set true to ignore work days/times
-#define TEST_NEW_WEEK   false   // Set true to set today as the data save day
-#define RESET           false   // Set true to reset EEPROM on boot
+#define ANYTIME         false       // Set true to ignore work days/times
+#define TEST_NEW_WEEK   false       // Set true to set today as the data save day
 
 // Workday
 #define WORK_START      8       // Start time in 24h format

@@ -24,7 +24,7 @@ NanoSprite<NanoEngine8, engine> heart({118, 5}, {7, 7}, heartBMP);
 // 5 = current week hours
 
 // TODO create setters/getters for these
-int weeklyPints = 0;              // 1 pint = 5 hours / 300 minutes
+int weeklyPints = 0;              // 1 pint = 5 weekHours / 300 minutes
 int lastPintAt = 0;               // Number of hours when last pint was added
 int weekHours = 0;                // Number of hours standing this week
 int maxHours = 0;                 // Maximum number of hours standing in a week
@@ -331,7 +331,7 @@ void setup() {
     rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
 
-  if (DEBUG && RESET) {
+  if (RESET_ALL) {
     resetMax();
     resetAvg();
     resetWeek();
