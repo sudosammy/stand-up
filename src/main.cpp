@@ -34,12 +34,12 @@ float beerPerc = 0;               // Percentage of beer to fill pint glass
 int currentSession = 0;           // Number of minutes standing in current session
 bool showSprite = false;          // Show heart sprite when standing
 int lastSensorReading = 0;        // Last distance sensor reading
-unsigned long sensorReadTime = 0; // For counting seconds (lastSensorReading)
-unsigned long timeRun = 0L;       // For counting minutes (currentSession)
+int lastSecond = 0;               // For counting seconds (lastSensorReading)
+uint32_t lastMinute = 0L;         // For counting minutes (currentSession)
 #if !DEBUG
-unsigned long minuteCounter = (60*1000L);
+uint8_t minuteCounter = 60;
 #else
-unsigned long minuteCounter = (1*1000L); // Make time speedy
+uint8_t minuteCounter = 2; // Make time speedy
 #endif
 char daysOfTheWeek[7][4] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
@@ -174,15 +174,16 @@ void beerLevel() {
 }
 
 bool isStanding() {
+  DateTime now = rtc.now();
   int distance = lastSensorReading;
   // Read updated distance every second
-  if (lastSensorReading == 0 || (millis() - sensorReadTime > 1000)) {
+  if (lastSensorReading == 0 || (now.second() != lastSecond)) {
     distance = sonar.ping_cm();
     if (DEBUG) {
       Serial.print("Distance: "); Serial.print(distance); Serial.println("cm");
     }
     lastSensorReading = distance;
-    sensorReadTime = millis();
+    lastSecond = now.second();
   }
 
   if (distance <= 125) { // distance to roof when sitting: ~150cm
@@ -210,8 +211,10 @@ bool isWorking() {
 void trackTime()  {
   if (isWorking() && isStanding()) {
     showSprite = true;
-    if (millis() - timeRun >= minuteCounter) {
-      timeRun = millis();
+    DateTime now = rtc.now();
+
+    if (now.unixtime() - lastMinute >= minuteCounter) { // 60 seconds has passed
+      lastMinute = now.unixtime();
       currentSession++; // increment currentSession by 1 minute
       if (DEBUG) {
         Serial.print("Standing, current session: "); Serial.println(currentSession);
@@ -339,12 +342,7 @@ void setup() {
 
   // Ensure reset day isn't today
   if (DEBUG) {
-    DateTime now = rtc.now();
-    if (now.dayOfTheWeek() == 6) {
-      resetDay = now.dayOfTheWeek()-1;
-    } else {
-      resetDay = now.dayOfTheWeek()+1;
-    }
+    resetDay = 7; // Not a day
   }
 
   // Set weekHours value
