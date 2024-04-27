@@ -338,6 +338,7 @@ void setup() {
     resetMax();
     resetAvg();
     resetWeek();
+    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
   }
 
   // Ensure reset day isn't today
