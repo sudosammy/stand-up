@@ -176,7 +176,7 @@ void beerLevel() {
 bool isStanding() {
   DateTime now = rtc.now();
   int distance = lastSensorReading;
-  // Read updated distance every second
+  // occasionally the sensor erroneously reads 0
   if (lastSensorReading == 0 || (now.second() != lastSecond)) {
     distance = sonar.ping_cm();
     if (DEBUG) {
@@ -186,7 +186,7 @@ bool isStanding() {
     lastSecond = now.second();
   }
 
-  if (distance <= 125) { // distance to roof when sitting: ~150cm
+  if (distance <= 125 && distance != 0) { // distance to roof when sitting: ~150cm
     return true;
   }
   return false;
